@@ -20,6 +20,7 @@ namespace Course
             var contours = new VectorOfVectorOfPoint();
             CvInvoke.FindContours(temp, contours,null,RetrType.External,
                 ChainApproxMethod.ChainApproxSimple );
+            
             return contours.Size > 0;
         }
     }
