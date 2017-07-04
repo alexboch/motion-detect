@@ -31,7 +31,7 @@ namespace Course
         private const string IdleStr = "Ожидание";
         private const string RecordStr = "Запись";
         private const string NomotionStr = "Нет движения";
-        private const int Fps = 60;
+        private const int Fps = 24;
         private Size _writeSize=new Size(640,480);
         /// <summary>
         /// Объект синхронизации
@@ -132,13 +132,38 @@ namespace Course
 
                     CvInvoke.Resize(_frame1, resizedFrame, ImageSize); //изменение размера
                     capturedImageBox.Image = resizedFrame;
-                    Mat frameToWrite = new Mat();
-                    if (_writeSize != _frame1.Size)
+                   
+
+                    if (motionDetected)
                     {
-                        CvInvoke.Resize(_frame1, frameToWrite, _writeSize);
-                        _videoWriter.Write(frameToWrite);
+                        Mat frameToWrite = new Mat();
+                        if (_writeSize != _frame1.Size)
+                        {
+                            CvInvoke.Resize(_frame1, frameToWrite, _writeSize);
+                            CvInvoke.PutText(frameToWrite, DateTime.Now.ToString(), new Point(10, 30),
+                                FontFace.HersheyComplex, 1, new MCvScalar(200, 200, 250));
+                            _videoWriter.Write(frameToWrite);
+                        }
+                        else
+                        {
+                            CvInvoke.PutText(_frame1, DateTime.Now.ToString(), new Point(10, 30),
+                                FontFace.HersheyComplex, 1, new MCvScalar(200, 200, 250));
+                            _videoWriter.Write(_frame1);
+                        }
+                        if (_writeSize != _frame2.Size)
+                        {
+                            CvInvoke.Resize(_frame2, frameToWrite, _writeSize);
+                            CvInvoke.PutText(frameToWrite, DateTime.Now.ToString(), new Point(10, 30),
+                                FontFace.HersheyComplex, 1, new MCvScalar(200, 200, 250));
+                            _videoWriter.Write(frameToWrite);
+                        }
+                        else
+                        {
+                            CvInvoke.PutText(_frame2, DateTime.Now.ToString(), new Point(10, 30),
+                                FontFace.HersheyComplex, 1, new MCvScalar(200, 200, 250));
+                            _videoWriter.Write(_frame2);
+                        }
                     }
-                    else _videoWriter.Write(_frame1);
                 }
             }
             catch (Exception exc)
@@ -215,8 +240,7 @@ namespace Course
             {
                 MessageBox.Show(exc.Message);
                 _videoWriter.Dispose();
-                if (_capture != null)
-                    _capture.Dispose();
+                _capture?.Dispose();
             }
             
         }
